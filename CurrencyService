@@ -1,0 +1,97 @@
+type stringArray = {[number] : string}
+
+local currencyModule = {
+	guiTable = {},--This is for saving the currency displays for every player
+	currencies = {},--To store all the currencies
+	CurrencyGiven = script.Parent.Events.CurrencyGiven,
+	WipingData = script.Parent.Events.WipingData,
+}
+
+local players = game:GetService("Players")
+
+function displayCurrencyAmount(currencyName : string, userId:Int, value:Int)
+	
+	local playerGuis = currencyModule.guiTable[userId]--A table with all the currency displays for the player with this UserId
+	local currencyDisplay:TextLabel
+	
+		currencyDisplay = playerGuis[currencyName]--The currency display was saved to the table by the currency name and will now be retrieved
+		if not currencyDisplay then--If it hasn't already been saved to the table
+			local guis = players:GetPlayerByUserId(userId).PlayerGui:GetDescendants()
+			for _, gui in pairs(guis) do
+				if gui:GetAttribute("CurrencyName") == currencyName then --Find the one with attribute that has the right currency name
+					currencyDisplay = gui--Set it to the display for the text to be changed
+					break--Once the currency display is found we don't need to continue running the loop
+				end
+			end
+		playerGuis[currencyName] = currencyDisplay--Save it to the table to save resources and not have to find it again
+	end
+	if currencyDisplay then--Using an if statement to prevent it from crashing if there is no display
+		currencyDisplay.Text = value
+	end
+end
+
+function currencyModule:GiveCurrency(currencyName : string, userId : Int, amount : Int)
+	
+	--Check for a table to store how much each player has of this currency	
+	local thisCurrencyTable = currencyModule.currencies[currencyName]
+		
+	if thisCurrencyTable == nil then --If the table doesn't already exist
+		currencyModule.currencies[currencyName] = {}--create it
+		thisCurrencyTable = currencyModule.currencies[currencyName]--Store it to the variable for access
+	end
+	
+	local account = thisCurrencyTable[userId]--the value in the table that matches the player's userId is what is used to store how much of a currency the player has
+	
+	if account ~= nil then--If they have an account
+		--The amount is added
+		thisCurrencyTable[userId] = thisCurrencyTable[userId] + amount
+	elseif account == nil then --If they don't have an account
+		--An account is created for them, defaulting to the value of the amount (skipping a step from 
+		--setting the value to 0 and then adding the amount)
+		thisCurrencyTable[userId] = amount
+	end
+
+	account = thisCurrencyTable[userId]
+	
+	displayCurrencyAmount(currencyName, userId, account)
+	
+	script.Parent.Events.CurrencyGiven:Fire(userId, currencyName, account, amount)
+	
+	return account
+end
+
+function currencyModule:GetAccount(currencyName, userId : Int)
+	local returned --Depending on different factors this variable will be different
+	
+	local thisCurrencyTable = currencyModule.currencies[currencyName]
+	
+	if thisCurrencyTable == nil then
+		returned =  nil 
+		warn("Attempt to call for a currency that does not exist")--If the currency does not exist a nil value is returned and a warning is sent that the currency does not exist
+	else
+		local account = thisCurrencyTable[userId] 
+		if account == nil then --If the player doesn't have an account yet the default of 0 is sent
+			returned = 0
+		else
+			returned = account
+		end
+	end
+	return returned
+end
+
+function currencyModule:WipeDataForUser(userId : Int)
+	currencyModule.WipingData:Fire(userId)
+	for name, currency in pairs(currencyModule.currencies) do
+		currency[userId] = nil
+	end
+	currencyModule.guiTable[userId] = nil
+end
+
+function currencyModule:WipeDataForUserInCurrencies(userId:Int, currencyNames:stringArray)
+	local currencyTable = currencyModule.currencies
+	for _, currencyName in ipairs(currencyNames) do
+		currencyTable[currencyName][userId] = nil
+	end
+end
+
+return currencyModule
