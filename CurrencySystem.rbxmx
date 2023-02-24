@@ -1,0 +1,1890 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<External>null</External>
+	<External>nil</External>
+	<Item class="Folder" referent="RBX2FBAF261F80343EAB1E0A640FA417A37">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<string name="Name">CurrencySystem</string>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="Script" referent="RBX51A77F514EE446FBB231778C80764327">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="Disabled">true</bool>
+				<Content name="LinkedSource"><null></null></Content>
+				<string name="Name">CurrencyManager</string>
+				<token name="RunContext">0</token>
+				<string name="ScriptGuid">{CDAB789F-2783-4036-A0E0-EB781FBB2A45}</string>
+				<ProtectedString name="Source"><![CDATA[local Players = game:GetService("Players")
+local runService = game:GetService("RunService")
+local serverScriptService = game:GetService("ServerScriptService")
+local pluginFolder = serverScriptService:WaitForChild("CurrencyPlugin")
+local runningCoroutine = coroutine.running()
+
+if runService:IsClient() then
+	coroutine.yield(runningCoroutine)
+	coroutine.close(runningCoroutine)
+end
+
+local currencyModule = require(pluginFolder:FindFirstChild("CurrencyService"))
+
+local isServer = runService:IsServer()
+
+--[[if plugin:GetSetting("Datastores") and isServer then
+	pluginFolder.Datastores.Disabled = false
+end
+if plugin:GetSetting("Leaderstats") and isServer then
+	pluginFolder.Leaderstats.Disabled = false
+end
+if isServer then 
+	pluginFolder["Iteration Method"].Disabled = false
+end
+
+if not plugin:GetSetting("Datastores") then
+	
+	Players.PlayerRemoving:Connect(function(plr)
+		--Wipe local data)
+		currencyModule:WipeDataForUser(plr.UserId)
+	end)
+end]]
+
+pluginFolder["Iteration Method"].Disabled = false
+pluginFolder.Leaderstats.Disabled = false]]></ProtectedString>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+		<Item class="ModuleScript" referent="RBXB4D279682345451DB8508100785170EE">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<Content name="LinkedSource"><null></null></Content>
+				<string name="Name">Individual Object Creation Method</string>
+				<string name="ScriptGuid">{937A231D-4C23-45EE-B765-67AD401B8371}</string>
+				<ProtectedString name="Source"><![CDATA[local CurrencyPart = {}
+
+--Services and Modules
+local Players = game:GetService("Players")
+local serverStorage = game:GetService("ServerStorage")
+local currencyModule = require(serverStorage:FindFirstChild("CurrencyPlugin"):FindFirstChild("CurrencyService"))
+
+-- Local Functions
+local function giveCurrency(otherPart, currencyPart:BasePart)
+	if currencyPart:GetAttribute("Cooldown") == false then
+		local character = otherPart.Parent
+		local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+		if humanoid then
+			currencyPart:SetAttribute("Cooldown", true)
+
+			local player = Players:GetPlayerFromCharacter(character)
+			local userId = player.UserId
+			local currencyName = currencyPart:GetAttribute("CurrencyName")
+
+			local account = currencyModule.GiveCurrency(nil,currencyName, userId, currencyPart:GetAttribute("Value"))
+
+			local initialTransparency = currencyPart.Transparency
+			currencyPart.Transparency = .66
+			wait(currencyPart:GetAttribute("CooldownTime"))
+			currencyPart:SetAttribute("Cooldown", false)
+			currencyPart.Transparency = 0
+		end
+	end
+end
+
+function CurrencyPart.new(parentedTo)
+	local part = Instance.new("Part")
+	part:SetAttribute("CurrencyName", "")
+	part:SetAttribute("Value", 0)
+	part:SetAttribute("Cooldown", false)
+	part:SetAttribute("CooldownTime", 3)
+	
+	part.Parent = parentedTo or workspace
+	
+	part.Touched:Connect(function(otherPart)
+		giveCurrency(otherPart, part)
+	end)
+	
+	return part
+end
+
+return CurrencyPart
+]]></ProtectedString>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+		<Item class="Folder" referent="RBX8115D7DED94C4AE59A2DE51C8A669CC1">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">PluginManagement</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+			<Item class="Folder" referent="RBX3EE5105EC2F043D7917D9A5D3AEDC703">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<string name="Name">StudioWidgets</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+				<Item class="ModuleScript" referent="RBXB7862EBD01A848EC8D182B5AECF78244">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">GuiUtilities</string>
+						<string name="ScriptGuid">{9FE64FEF-94A8-4441-8B12-89DF3E522E17}</string>
+						<ProtectedString name="Source"><![CDATA[local module = {}
+
+
+module.kTitleBarHeight = 27
+module.kInlineTitleBarHeight = 24
+
+module.kStandardContentAreaWidth = 180
+
+module.kStandardPropertyHeight = 30
+module.kSubSectionLabelHeight = 30
+
+module.kStandardVMargin = 7
+module.kStandardHMargin = 16
+
+module.kCheckboxMinLabelWidth = 52
+module.kCheckboxMinMargin = 12
+module.kCheckboxWidth = 18
+
+module.kRadioButtonsHPadding = 24
+
+module.StandardLineLabelLeftMargin = module.kTitleBarHeight
+module.StandardLineElementLeftMargin = (module.StandardLineLabelLeftMargin + module.kCheckboxMinLabelWidth
++ module.kCheckboxMinMargin + module.kCheckboxWidth + module.kRadioButtonsHPadding)
+module.StandardLineLabelWidth = (module.StandardLineElementLeftMargin - module.StandardLineLabelLeftMargin - 10 )
+
+module.kDropDownHeight = 55
+
+module.kBottomButtonsFrameHeight = 50
+module.kBottomButtonsHeight = 28
+
+module.kShapeButtonSize = 32
+module.kTextVerticalFudge = -3
+module.kButtonVerticalFudge = -5
+
+module.kBottomButtonsWidth = 100
+
+module.kDisabledTextColor = Color3.new(.4, .4, .4)                   --todo: input spec disabled text color
+module.kStandardButtonTextColor = Color3.new(0, 0, 0)                --todo: input spec disabled text color
+module.kPressedButtonTextColor = Color3.new(1, 1, 1)                 --todo: input spec disabled text color
+
+module.kButtonStandardBackgroundColor = Color3.new(1, 1, 1)          --todo: sync with spec
+module.kButtonStandardBorderColor = Color3.new(.4,.4,.4)             --todo: sync with spec
+module.kButtonDisabledBackgroundColor = Color3.new(.7,.7,.7)         --todo: sync with spec
+module.kButtonDisabledBorderColor = Color3.new(.6,.6,.6)             --todo: sync with spec
+
+module.kButtonBackgroundTransparency = 0.5
+module.kButtonBackgroundIntenseTransparency = 0.4
+
+module.kMainFrame = nil
+
+function module.ShouldUseIconsForDarkerBackgrounds()
+	local mainColor = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainBackground)
+	return (mainColor.r + mainColor.g + mainColor.b) / 3 < 0.5
+end
+
+function module.SetMainFrame(frame)
+	module.kMainFrame = frame
+end
+
+function module.syncGuiElementTitleColor(guiElement)
+	local function setColors()
+		guiElement.BackgroundColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.Titlebar)
+	end
+	settings().Studio.ThemeChanged:connect(setColors)
+	setColors()
+end
+
+function module.syncGuiElementInputFieldColor(guiElement)
+	local function setColors()
+		guiElement.BackgroundColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.InputFieldBackground)
+	end
+	settings().Studio.ThemeChanged:connect(setColors)
+	setColors()
+end
+
+function module.syncGuiElementBackgroundColor(guiElement)
+	local function setColors()
+		guiElement.BackgroundColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainBackground)
+	end
+	settings().Studio.ThemeChanged:connect(setColors)
+	setColors()
+end
+
+function module.syncGuiElementStripeColor(guiElement)
+	local function setColors()
+		if ((guiElement.LayoutOrder + 1) % 2 == 0) then 
+			guiElement.BackgroundColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainBackground)
+		else
+			guiElement.BackgroundColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.CategoryItem)
+		end
+	end
+	settings().Studio.ThemeChanged:connect(setColors)
+	setColors()
+end
+
+function module.syncGuiElementBorderColor(guiElement)
+	local function setColors()
+		guiElement.BorderColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.Border)
+	end
+	settings().Studio.ThemeChanged:connect(setColors)
+	setColors()
+end
+
+function module.syncGuiElementFontColor(guiElement)
+	local function setColors()
+		guiElement.TextColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText)
+	end
+	settings().Studio.ThemeChanged:connect(setColors)
+	setColors()
+end
+
+function module.syncGuiElementScrollColor(guiElement)
+	local function setColors()
+		guiElement.ScrollBarImageColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.ScrollBar)
+	end
+	settings().Studio.ThemeChanged:connect(setColors)
+	setColors()
+end
+
+-- A frame with standard styling.
+function module.MakeFrame(name)
+	local frame = Instance.new("Frame")
+	frame.Name = name
+	frame.BackgroundTransparency = 0
+	frame.BorderSizePixel = 0
+
+	module.syncGuiElementBackgroundColor(frame)
+
+	return frame
+end
+	
+
+-- A frame that is a whole line, containing some arbitrary sized widget.
+function module.MakeFixedHeightFrame(name, height)
+	local frame = module.MakeFrame(name)
+	frame.Size = UDim2.new(1, 0, 0, height)
+
+	return frame
+end
+
+-- A frame that is one standard-sized line, containing some standard-sized widget (label, edit box, dropdown, 
+-- checkbox)
+function module.MakeStandardFixedHeightFrame(name)
+	return module.MakeFixedHeightFrame(name, module.kStandardPropertyHeight)
+end
+
+function module.AdjustHeightDynamicallyToLayout(frame, uiLayout, optPadding)
+	if (not optPadding) then 
+		optPadding = 0
+	end
+
+	local function updateSizes()
+		frame.Size = UDim2.new(1, 0, 0, uiLayout.AbsoluteContentSize.Y + optPadding)
+	end
+	uiLayout:GetPropertyChangedSignal("AbsoluteContentSize"):connect(updateSizes)
+	updateSizes()
+end
+
+-- Assumes input frame has a List layout with sort order layout order.
+-- Add frames in order as siblings of list layout, they will be laid out in order.
+-- Color frame background accordingly.
+function module.AddStripedChildrenToListFrame(listFrame, frames)
+	for index, frame in ipairs(frames) do 
+		frame.Parent = listFrame
+		frame.LayoutOrder = index
+		frame.BackgroundTransparency = 0
+		frame.BorderSizePixel = 1
+		module.syncGuiElementStripeColor(frame)
+		module.syncGuiElementBorderColor(frame)
+	end
+end
+
+local function MakeSectionInternal(parentGui, name, title, contentHeight)
+	local frame = Instance.new("Frame")
+	frame.Name = name
+	frame.BackgroundTransparency = 1
+	frame.Parent = parentGui
+	frame.BackgroundTransparency = 1
+	frame.BorderSizePixel = 0
+	
+	-- If title is "nil', no title bar.
+	local contentYOffset = 0
+	local titleBar = nil
+	if (title ~= nil) then  
+		local titleBarFrame = Instance.new("Frame")
+		titleBarFrame.Name = "TitleBarFrame"
+		titleBarFrame.Parent = frame
+		titleBarFrame.Position = UDim2.new(0, 0, 0, 0)
+		titleBarFrame.LayoutOrder = 0
+
+		local titleBar = Instance.new("TextLabel")
+		titleBar.Name = "TitleBarLabel"
+		titleBar.Text = title
+		titleBar.Parent = titleBarFrame
+		titleBar.BackgroundTransparency = 1
+		titleBar.Position = UDim2.new(0, module.kStandardHMargin, 0, 0)
+
+		module.syncGuiElementFontColor(titleBar)
+	
+		contentYOffset = contentYOffset + module.kTitleBarHeight
+	end
+
+	frame.Size = UDim2.new(1, 0, 0, contentYOffset + contentHeight)
+
+	return frame
+end
+
+function module.MakeStandardPropertyLabel(text, opt_ignoreThemeUpdates)
+	local label = Instance.new('TextLabel')
+	label.Name = 'Label'
+	label.BackgroundTransparency = 1
+	label.Font = Enum.Font.SourceSans                    --todo: input spec font
+	label.TextSize = 26                                  --todo: input spec font size
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Text = text
+	label.AnchorPoint = Vector2.new(0, 0.5)
+	label.Position = UDim2.new(0, module.StandardLineLabelLeftMargin, 0.5, module.kTextVerticalFudge)
+	label.Size = UDim2.new(0, module.StandardLineLabelWidth, 1, 0)
+
+	if (not opt_ignoreThemeUpdates) then 			
+		module.syncGuiElementFontColor(label)
+	end
+
+	return label
+end
+
+function module.MakeFrameWithSubSectionLabel(name, text)
+	local row = module.MakeFixedHeightFrame(name, module.kSubSectionLabelHeight)
+	row.BackgroundTransparency = 1
+		
+	local label = module.MakeStandardPropertyLabel(text)
+	label.BackgroundTransparency = 1
+	label.Parent = row
+
+	return row
+end
+
+function module.MakeFrameAutoScalingList(frame)
+	local uiListLayout = Instance.new("UIListLayout")
+	uiListLayout.Parent = frame
+	uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+	module.AdjustHeightDynamicallyToLayout(frame, uiListLayout)
+end
+
+
+return module]]></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX3D7997AFAAAF48C08BB8FFF66A4D88F8">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">LabeledCheckbox</string>
+						<string name="ScriptGuid">{926EB280-19C1-415F-BDD0-6C158ED89F1D}</string>
+						<ProtectedString name="Source"><![CDATA[----------------------------------------
+--
+-- LabeledCheckbox.lua
+--
+-- Creates a frame containing a label and a checkbox.
+--
+----------------------------------------
+GuiUtilities = require(script.Parent.GuiUtilities)
+
+local kCheckboxWidth = GuiUtilities.kCheckboxWidth
+
+local kMinTextSize = 24
+local kMinHeight = 24
+local kMinLabelWidth = GuiUtilities.kCheckboxMinLabelWidth
+local kMinMargin = GuiUtilities.kCheckboxMinMargin
+local kMinButtonWidth = kCheckboxWidth;
+
+local kMinLabelSize = UDim2.new(0, kMinLabelWidth, 0, kMinHeight)
+local kMinLabelPos = UDim2.new(0, kMinButtonWidth + kMinMargin, 0, kMinHeight/2)
+
+local kMinButtonSize = UDim2.new(0, kMinButtonWidth, 0, kMinButtonWidth)
+local kMinButtonPos = UDim2.new(0, 0, 0, kMinHeight/2)
+
+local kCheckImageWidth = 18
+local kMinCheckImageWidth = kCheckImageWidth
+
+local kCheckImageSize = UDim2.new(0, kCheckImageWidth, 0, kCheckImageWidth)
+local kMinCheckImageSize = UDim2.new(0, kMinCheckImageWidth, 0, kMinCheckImageWidth)
+
+local kEnabledCheckImage = "rbxasset://textures/TerrainTools/icon_tick.png"
+local kDisabledCheckImage = "rbxasset://textures/TerrainTools/icon_tick_grey.png"
+local kCheckboxFrameImage = "rbxasset://textures/TerrainTools/checkbox_square.png"
+LabeledCheckboxClass = {}
+LabeledCheckboxClass.__index = LabeledCheckboxClass
+
+LabeledCheckboxClass.kMinFrameSize = UDim2.new(0, kMinLabelWidth + kMinMargin + kMinButtonWidth, 0, kMinHeight)
+
+
+function LabeledCheckboxClass.new(nameSuffix, labelText, initValue, initDisabled)
+	local self = {}
+	setmetatable(self, LabeledCheckboxClass)
+
+	local initValue = not not initValue
+	local initDisabled = not not initDisabled
+
+	local frame = GuiUtilities.MakeStandardFixedHeightFrame("CBF" .. nameSuffix)
+
+	local fullBackgroundButton = Instance.new("TextButton")
+	fullBackgroundButton.Name = "FullBackground"
+	fullBackgroundButton.Parent = frame
+	fullBackgroundButton.BackgroundTransparency = 1
+	fullBackgroundButton.Size = UDim2.new(1, 0, 1, 0)
+	fullBackgroundButton.Position = UDim2.new(0, 0, 0, 0)
+	fullBackgroundButton.Text = ""
+
+	local label = GuiUtilities.MakeStandardPropertyLabel(labelText, true)
+	label.Parent = fullBackgroundButton
+
+	local button = Instance.new('ImageButton')
+	button.Name = 'Button'
+	button.Size = UDim2.new(0, kCheckboxWidth, 0, kCheckboxWidth)
+	button.AnchorPoint = Vector2.new(0, .5)
+	button.BackgroundTransparency = 0
+	button.Position = UDim2.new(0, GuiUtilities.StandardLineElementLeftMargin, .5, 0)
+	button.Parent = fullBackgroundButton
+	button.Image = kCheckboxFrameImage
+	button.BorderSizePixel = 0
+	button.AutoButtonColor = false
+	
+	local checkImage = Instance.new("ImageLabel")
+	checkImage.Name = "CheckImage"
+	checkImage.Parent = button
+	checkImage.Image = kEnabledCheckImage
+	checkImage.Visible = false
+	checkImage.Size = kCheckImageSize
+	checkImage.AnchorPoint = Vector2.new(0.5, 0.5)
+	checkImage.Position = UDim2.new(0.5, 0, 0.5, 0)
+	checkImage.BackgroundTransparency = 1
+	checkImage.BorderSizePixel = 0
+
+	self._frame = frame
+	self._button = button
+	self._label = label
+	self._checkImage = checkImage
+	self._fullBackgroundButton = fullBackgroundButton
+	self._useDisabledOverride = false
+	self._disabledOverride = false
+	self:SetDisabled(initDisabled)
+
+	self._value = not initValue
+	self:SetValue(initValue)
+
+	self:_SetupMouseClickHandling()
+
+	local function updateFontColors()
+		self:UpdateFontColors()
+	end
+	settings().Studio.ThemeChanged:connect(updateFontColors)
+	updateFontColors()
+
+	return self
+end
+
+
+function LabeledCheckboxClass:_MaybeToggleState()
+	if not self._disabled then
+		self:SetValue(not self._value)
+	end
+end
+
+function LabeledCheckboxClass:_SetupMouseClickHandling()
+	self._button.MouseButton1Down:connect(function()
+		self:_MaybeToggleState()
+	end)
+
+	self._fullBackgroundButton.MouseButton1Down:connect(function()
+		self:_MaybeToggleState()
+	end)
+end
+
+function LabeledCheckboxClass:_HandleUpdatedValue()
+	self._checkImage.Visible = self:GetValue()
+
+	if (self._valueChangedFunction) then 
+		self._valueChangedFunction(self:GetValue())
+	end
+end
+
+-- Small checkboxes are a different entity.
+-- All the bits are smaller.
+-- Fixed width instead of flood-fill.
+-- Box comes first, then label.
+function LabeledCheckboxClass:UseSmallSize()
+	self._label.TextSize = kMinTextSize
+	self._label.Size = kMinLabelSize
+	self._label.Position = kMinLabelPos
+	self._label.TextXAlignment = Enum.TextXAlignment.Left
+
+	self._button.Size = kMinButtonSize    
+	self._button.Position = kMinButtonPos
+
+	self._checkImage.Size = kMinCheckImageSize
+
+	self._frame.Size = LabeledCheckboxClass.kMinFrameSize
+	self._frame.BackgroundTransparency = 1
+end
+
+function LabeledCheckboxClass:GetFrame()
+	return self._frame
+end
+
+function LabeledCheckboxClass:GetValue()
+	-- If button is disabled, and we should be using a disabled override, 
+	-- use the disabled override.
+	if (self._disabled and self._useDisabledOverride) then 
+		return self._disabledOverride
+	else
+		return self._value
+	end
+end
+
+function LabeledCheckboxClass:GetLabel()
+	return self._label
+end
+
+function LabeledCheckboxClass:GetButton()
+	return self._button
+end
+
+function LabeledCheckboxClass:SetValueChangedFunction(vcFunction) 
+	self._valueChangedFunction = vcFunction
+end
+
+function LabeledCheckboxClass:SetDisabled(newDisabled)
+	local newDisabled = not not newDisabled
+
+	local originalValue = self:GetValue()
+
+	if newDisabled ~= self._disabled then
+		self._disabled = newDisabled
+
+		-- if we are no longer disabled, then we don't need or want 
+		-- the override any more.  Forget it.
+		if (not self._disabled) then 
+			self._useDisabledOverride = false
+		end
+
+		if (newDisabled) then 
+			self._checkImage.Image = kDisabledCheckImage
+		else
+			self._checkImage.Image = kEnabledCheckImage
+		end
+
+		self:UpdateFontColors()
+		self._button.BackgroundColor3 = self._disabled and GuiUtilities.kButtonDisabledBackgroundColor or GuiUtilities.kButtonStandardBackgroundColor
+		self._button.BorderColor3 = self._disabled and GuiUtilities.kButtonDisabledBorderColor or GuiUtilities.kButtonStandardBorderColor
+		if self._disabledChangedFunction then
+			self._disabledChangedFunction(self._disabled)
+		end
+	end
+
+	local newValue = self:GetValue()
+	if (newValue ~= originalValue) then 
+		self:_HandleUpdatedValue()
+	end
+end
+
+function LabeledCheckboxClass:UpdateFontColors()
+	if self._disabled then 
+		self._label.TextColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.DimmedText)
+	else
+		self._label.TextColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText)
+	end
+end
+
+function LabeledCheckboxClass:DisableWithOverrideValue(overrideValue)
+	-- Disable this checkbox.  While disabled, force value to override
+	-- value.
+	local oldValue = self:GetValue()
+	self._useDisabledOverride = true
+	self._disabledOverride = overrideValue
+	self:SetDisabled(true)
+	local newValue = self:GetValue()
+	if (oldValue ~= newValue) then 
+		self:_HandleUpdatedValue()
+	end		
+end
+
+function LabeledCheckboxClass:GetDisabled()
+	return self._disabled
+end
+
+function LabeledCheckboxClass:SetValue(newValue)
+	local newValue = not not newValue
+	
+	if newValue ~= self._value then
+		self._value = newValue
+
+		self:_HandleUpdatedValue()
+	end
+end
+
+return LabeledCheckboxClass]]></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBXC2DA5B026F794EBFA72A7E3412B140F0">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">LabeledTextInput</string>
+						<string name="ScriptGuid">{8588020D-F1EE-4D01-88D1-B6CBC28A05B8}</string>
+						<ProtectedString name="Source"><![CDATA[----------------------------------------
+--
+-- LabeledTextInput.lua
+--
+-- Creates a frame containing a label and a text input control.
+--
+----------------------------------------
+GuiUtilities = require(script.Parent.GuiUtilities)
+
+local kTextInputWidth = 40
+local kTextBoxInternalPadding = 4
+
+LabeledTextInputClass = {}
+LabeledTextInputClass.__index = LabeledTextInputClass
+
+function LabeledTextInputClass.new(nameSuffix, labelText, defaultValue)
+	local self = {}
+	setmetatable(self, LabeledTextInputClass)
+
+	-- Note: we are using "graphemes" instead of characters.
+	-- In modern text-manipulation-fu, what with internationalization, 
+	-- emojis, etc, it's not enough to count characters, particularly when 
+	-- concerned with "how many <things> am I rendering?".
+	-- We are using the 
+	self._MaxGraphemes = 10
+
+	self._valueChangedFunction = nil
+
+	local defaultValue = defaultValue or ""
+
+	local frame = GuiUtilities.MakeStandardFixedHeightFrame('TextInput ' .. nameSuffix)
+	self._frame = frame
+
+	local label = GuiUtilities.MakeStandardPropertyLabel(labelText)
+	label.Parent = frame
+	self._label = label
+
+	self._value = defaultValue
+
+	-- Dumb hack to add padding to text box,
+	local textBoxWrapperFrame = Instance.new("Frame")
+	textBoxWrapperFrame.Name = "Wrapper"
+	textBoxWrapperFrame.Size = UDim2.new(0, kTextInputWidth, 0.6, 0)
+	textBoxWrapperFrame.Position = UDim2.new(0, 190, .5, 0)
+	textBoxWrapperFrame.AnchorPoint = Vector2.new(0, .5)
+	textBoxWrapperFrame.Parent = frame
+	GuiUtilities.syncGuiElementInputFieldColor(textBoxWrapperFrame)
+	GuiUtilities.syncGuiElementBorderColor(textBoxWrapperFrame)
+
+	local textBox = Instance.new("TextBox")
+	textBox.Parent = textBoxWrapperFrame
+	textBox.Name = "TextBox"
+	textBox.Text = defaultValue
+	textBox.Font = Enum.Font.SourceSans
+	textBox.TextSize = 26
+	textBox.BackgroundTransparency = 1
+	textBox.TextXAlignment = Enum.TextXAlignment.Left
+	textBox.Size = UDim2.new(1, -kTextBoxInternalPadding, 1, GuiUtilities.kTextVerticalFudge)
+	textBox.Position = UDim2.new(0, kTextBoxInternalPadding, 0, 0)
+	textBox.ClipsDescendants = true
+
+	GuiUtilities.syncGuiElementFontColor(textBox)
+
+	textBox:GetPropertyChangedSignal("Text"):connect(function()
+		-- Never let the text be too long.
+		-- Careful here: we want to measure number of graphemes, not characters, 
+		-- in the text, and we want to clamp on graphemes as well.
+		if (utf8.len(self._textBox.Text) > self._MaxGraphemes) then 
+			local count = 0
+			for start, stop in utf8.graphemes(self._textBox.Text) do
+				count = count + 1
+				if (count > self._MaxGraphemes) then 
+					-- We have gone one too far.
+					-- clamp just before the beginning of this grapheme.
+					self._textBox.Text = string.sub(self._textBox.Text, 1, start-1)
+					break
+				end
+			end
+			-- Don't continue with rest of function: the resetting of "Text" field
+			-- above will trigger re-entry.  We don't need to trigger value
+			-- changed function twice.
+			return
+		end
+
+		self._value = self._textBox.Text
+		if (self._valueChangedFunction) then 
+			self._valueChangedFunction(self._value)
+		end
+	end)
+
+	self._textBox = textBox
+
+	return self
+end
+
+function LabeledTextInputClass:SetValueChangedFunction(vcf)
+	self._valueChangedFunction = vcf
+end
+
+function LabeledTextInputClass:GetFrame()
+	return self._frame
+end
+
+function LabeledTextInputClass:GetValue()
+	return self._value
+end
+
+function LabeledTextInputClass:GetMaxGraphemes()
+	return self._MaxGraphemes
+end
+
+function LabeledTextInputClass:SetMaxGraphemes(newValue)
+	self._MaxGraphemes = newValue
+end
+
+function LabeledTextInputClass:SetValue(newValue)
+	if self._value ~= newValue then
+		self._textBox.Text = newValue
+	end
+end
+
+return LabeledTextInputClass]]></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBXCE90BADBC08B4E71B350250E3A66F554">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">CollapsibleTitledSection</string>
+						<string name="ScriptGuid">{47D309A5-40D6-4244-91A7-FF180C07405F}</string>
+						<ProtectedString name="Source"><![CDATA[----------------------------------------
+--
+-- CollapsibleTitledSectionClass
+--
+-- Creates a section with a title label:
+--
+-- "SectionXXX"
+--     "TitleBarVisual"
+--     "Contents"
+--
+-- Requires "parent" and "sectionName" parameters and returns the section and its contentsFrame
+-- The entire frame will resize dynamically as contents frame changes size.
+--
+-- "autoScalingList" is a boolean that defines wheter or not the content frame automatically resizes when children are added.
+-- This is important for cases when you want minimize button to push or contract what is below it.
+--
+-- Both "minimizeable" and "minimizedByDefault" are false by default
+-- These parameters define if the section will have an arrow button infront of the title label, 
+-- which the user may use to hide the section's contents
+--
+----------------------------------------
+GuiUtilities = require(script.Parent.GuiUtilities)
+
+local kRightButtonAsset = "rbxasset://textures/TerrainTools/button_arrow.png"
+local kDownButtonAsset = "rbxasset://textures/TerrainTools/button_arrow_down.png"
+
+local kArrowSize = 9
+local kDoubleClickTimeSec = 0.5
+
+CollapsibleTitledSectionClass = {}
+CollapsibleTitledSectionClass.__index = CollapsibleTitledSectionClass
+
+
+function CollapsibleTitledSectionClass.new(nameSuffix, titleText, autoScalingList, minimizable, minimizedByDefault)
+	local self = {}
+	setmetatable(self, CollapsibleTitledSectionClass)
+	
+	self._minimized = minimizedByDefault
+	self._minimizable = minimizable
+
+	self._titleBarHeight = GuiUtilities.kTitleBarHeight
+
+	local frame = Instance.new('Frame')
+	frame.Name = 'CTSection' .. nameSuffix
+	frame.BackgroundTransparency = 1
+	self._frame = frame
+
+	local uiListLayout = Instance.new('UIListLayout')
+	uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	uiListLayout.Parent = frame
+	self._uiListLayout = uiListLayout
+
+	local contentsFrame = Instance.new('Frame')
+	contentsFrame.Name = 'Contents'
+	contentsFrame.BackgroundTransparency = 1
+	contentsFrame.Size = UDim2.new(1, 0, 0, 1)
+	contentsFrame.Position = UDim2.new(0, 0, 0, titleBarSize)
+	contentsFrame.Parent = frame
+	contentsFrame.LayoutOrder = 2
+	GuiUtilities.syncGuiElementBackgroundColor(contentsFrame)
+
+	self._contentsFrame = contentsFrame
+
+	uiListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):connect(function()
+		self:_UpdateSize()
+	end)
+	self:_UpdateSize()
+
+	self:_CreateTitleBar(titleText)
+	self:SetCollapsedState(self._minimized)
+	
+	if (autoScalingList) then
+		GuiUtilities.MakeFrameAutoScalingList(self:GetContentsFrame())
+	end
+
+	return self
+end
+
+
+function CollapsibleTitledSectionClass:GetSectionFrame()
+	return self._frame
+end
+
+function CollapsibleTitledSectionClass:GetContentsFrame()
+	return self._contentsFrame
+end
+
+function CollapsibleTitledSectionClass:_UpdateSize()
+	local totalSize = self._uiListLayout.AbsoluteContentSize.Y
+	self._frame.Size = UDim2.new(1, 0, 0, totalSize)
+end
+
+function CollapsibleTitledSectionClass:_UpdateMinimizeButton()
+	-- We can't rotate it because rotated images don't get clipped by parents.
+	-- This is all in a scroll widget.
+	-- :(
+	if (self._minimized) then 
+		self._minimizeButton.Image = kRightButtonAsset
+	else
+		self._minimizeButton.Image = kDownButtonAsset
+	end
+end
+
+function CollapsibleTitledSectionClass:SetCollapsedState(bool)
+	self._minimized = bool
+	self._contentsFrame.Visible = not bool
+	self:_UpdateMinimizeButton()
+	self:_UpdateSize()
+end
+
+function CollapsibleTitledSectionClass:_ToggleCollapsedState()
+	self:SetCollapsedState(not self._minimized)
+end
+
+function CollapsibleTitledSectionClass:_CreateTitleBar(titleText)
+	local titleTextOffset = self._titleBarHeight
+
+	local titleBar = Instance.new('ImageButton')
+	titleBar.AutoButtonColor = false
+	titleBar.Name = 'TitleBarVisual'
+	titleBar.BorderSizePixel = 0
+	titleBar.Position = UDim2.new(0, 0, 0, 0)
+	titleBar.Size = UDim2.new(1, 0, 0, self._titleBarHeight)
+	titleBar.Parent = self._frame
+	titleBar.LayoutOrder = 1
+	GuiUtilities.syncGuiElementTitleColor(titleBar)
+
+	local titleLabel = Instance.new('TextLabel')
+	titleLabel.Name = 'TitleLabel'
+	titleLabel.BackgroundTransparency = 1
+	titleLabel.Font = Enum.Font.SourceSansBold                --todo: input spec font
+	titleLabel.TextSize = 15                                  --todo: input spec font size
+	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+	titleLabel.Text = titleText
+	titleLabel.Position = UDim2.new(0, titleTextOffset, 0, 0)
+	titleLabel.Size = UDim2.new(1, -titleTextOffset, 1, GuiUtilities.kTextVerticalFudge)
+	titleLabel.Parent = titleBar
+	GuiUtilities.syncGuiElementFontColor(titleLabel)
+
+	self._minimizeButton = Instance.new('ImageButton')
+	self._minimizeButton.Name = 'MinimizeSectionButton'
+	self._minimizeButton.Image = kRightButtonAsset              --todo: input arrow image from spec
+	self._minimizeButton.Size = UDim2.new(0, kArrowSize, 0, kArrowSize)
+	self._minimizeButton.AnchorPoint = Vector2.new(0.5, 0.5)
+	self._minimizeButton.Position = UDim2.new(0, self._titleBarHeight*.5,
+		 0, self._titleBarHeight*.5)
+	self._minimizeButton.BackgroundTransparency = 1
+	self._minimizeButton.Visible = self._minimizable -- only show when minimizable
+
+	self._minimizeButton.MouseButton1Down:connect(function()
+		self:_ToggleCollapsedState()
+	end)
+	self:_UpdateMinimizeButton()
+	self._minimizeButton.Parent = titleBar
+
+	self._latestClickTime = 0
+	titleBar.MouseButton1Down:connect(function()
+		local now = tick()	
+		if (now - self._latestClickTime < kDoubleClickTimeSec) then 
+			self:_ToggleCollapsedState()
+			self._latestClickTime = 0
+		else
+			self._latestClickTime = now
+		end
+	end)
+end
+
+return CollapsibleTitledSectionClass]]></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="Script" referent="RBX14A16DCFDC294F73B1BBEF1A2B94E661">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="Disabled">false</bool>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">Widget</string>
+					<token name="RunContext">0</token>
+					<string name="ScriptGuid">{F339AAA9-77C4-4D52-A91F-F1BF36FD2EC7}</string>
+					<ProtectedString name="Source"><![CDATA[local Selection = game:GetService("Selection")
+local changeHistoryService = game:GetService("ChangeHistoryService")
+
+local datastoreService = game:GetService("DataStoreService")
+local currencyDatastore = datastoreService:GetDataStore("Currencies")
+local currencyDataKey = "CurrencyData"
+local currencyData
+
+local LabeledCheckBox = require(script.Parent.StudioWidgets.LabeledCheckbox)
+local LabeledTextInput = require(script.Parent.StudioWidgets.LabeledTextInput)
+local CollapsibleTitledSection = require(script.Parent.StudioWidgets.CollapsibleTitledSection)
+
+local pluginToolbar = plugin:CreateToolbar("Currency Service")
+
+local openGuiToolbarButton:PluginToolbarButton = pluginToolbar:CreateButton("Open Window", "Open the window for the currency plugin", "rbxassetid://10140266247")
+openGuiToolbarButton.ClickableWhenViewportHidden = true
+
+local widgetInfo = DockWidgetPluginGuiInfo.new(
+	Enum.InitialDockState.Float,  -- Widget will be initialized in floating panel
+	false,   -- Widget will not be initially enabled
+	false,  -- Don't override the previous enabled state
+	300,    -- Default width of the floating window
+	500,    -- Default height of the floating window
+	240,    -- Minimum width of the floating window
+	260     -- Minimum height of the floating window
+)
+
+local widget:DockWidgetPluginGui = plugin:CreateDockWidgetPluginGui("Currency System", widgetInfo)
+widget.Title = "Currency Management"
+
+local widgetFrame = script.Parent.Frame
+widgetFrame.Parent = widget
+
+
+local autoSaveIntervalTextBox = LabeledTextInput.new("asi", "Auto Save Interval", plugin:GetSetting("AutoSaveInterval"))
+autoSaveIntervalTextBox:GetFrame().LayoutOrder = 30
+autoSaveIntervalTextBox:GetFrame().Parent = widgetFrame
+
+local function onOpenGuiButtonClicked()
+	widget.Enabled = not widget.Enabled
+end
+
+local function createCurrencyPart()
+	local newPart = Instance.new("Part")
+	newPart:SetAttribute("CurrencyName", "")
+	newPart:SetAttribute("Value", 0)
+	newPart:SetAttribute("CooldownTime", 0)
+	
+	newPart.Name = "CurrencyPart"
+	newPart.Parent = Selection:Get()[1] or workspace
+	
+	Selection:Set({newPart})
+	changeHistoryService:SetWaypoint("Create a new currencyPart")
+end
+
+local function createCurrencyLabel()
+	local newLabel = Instance.new("TextLabel")
+	newLabel.Size = UDim2.new(0, 165, 0, 65)
+	newLabel.Text = 0
+	newLabel:SetAttribute("CurrencyName", "")
+	
+	newLabel.Name = "CurrencyLabel"
+	newLabel.Parent = Selection:Get()[1] or game:GetService("StarterGui")
+	
+	Selection:Set({newLabel})
+	changeHistoryService:SetWaypoint("Create a new currencyLabel")
+end
+
+local function importModule()
+	local entirePlugin = script.Parent.Parent
+	local serverScriptService = game:GetService("ServerScriptService")
+	local storageFolder
+
+	task.wait()
+
+	storageFolder = entirePlugin.CurrencyPlugin
+	storageFolder.Parent = serverScriptService
+
+	storageFolder["Iteration Method"].Enabled = true
+	storageFolder.Leaderstats.Enabled = true
+	storageFolder.Datastores = true
+end
+
+local function autoSaveIntervalChanged(newValue)
+	if newValue == "" then
+		autoSaveIntervalTextBox:SetValue(0)
+		return
+	end
+	
+	local asANum = tonumber(newValue)
+	if asANum == nil then
+		autoSaveIntervalTextBox:SetValue(0)
+		return
+	end
+	
+	local toKnow = math.sign(asANum)--Returns -1 if less than 0, 0 if it is 0 and 1 if it is greater than 0
+	
+	if toKnow == 1 then
+		plugin:SetSetting("AutoSaveInterval", newValue)
+	else
+		autoSaveIntervalTextBox:SetValue(0)
+	end
+end
+
+local function syncGuiColors(objects)
+	local function setColors()
+		for _, guiObject :GuiObject in pairs(objects) do
+			-- Sync background color
+			guiObject.BackgroundColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainBackground)
+			-- Sync text color
+			if guiObject.ClassName == "TextButton" then
+				guiObject.TextColor3 = settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText)
+			end
+		end
+	end
+	-- Run 'setColors()' function to initially sync colors
+	setColors()
+	-- Connect 'ThemeChanged' event to the 'setColors()' function
+	settings().Studio.ThemeChanged:Connect(setColors)
+end
+
+local currencyDataKey, currencyData = pcall(function()
+	currencyData = currencyDatastore:GetAsync(currencyDataKey)
+end)
+
+if currencyData then
+	for currencyName, data in ipairs(currencyData)do
+	local collapseableContainer = CollapsibleTitledSection.new(currencyName, currencyName, true, true, true)
+
+	local datstoreCheckbox = LabeledCheckBox.new("dstore", "Datastores", plugin:GetSetting("Datastores"), false)
+	datstoreCheckbox:GetFrame().LayoutOrder = 10
+	datstoreCheckbox:GetFrame().Parent = collapseableContainer:GetContentsFrame()
+
+	local leaderstatsCheckbox = LabeledCheckBox.new("lstats", "Leaderstats", plugin:GetSetting("Leaderstats"), false)
+	leaderstatsCheckbox:GetFrame().LayoutOrder = 20
+	leaderstatsCheckbox:GetFrame().Parent = collapseableContainer:GetContentsFrame()
+
+	collapseableContainer:GetSectionFrame().LayoutOrder = 10
+	collapseableContainer:GetSectionFrame().Parent = widgetFrame
+	
+	datstoreCheckbox:SetValueChangedFunction(function(newValue)
+		currencyDatastore:UpdateAsync(currencyName, function(value)
+			value.datastore = newValue
+			return value
+		end)
+	end)
+	leaderstatsCheckbox:SetValueChangedFunction(function(newValue)
+		currencyDatastore:UpdateAsync(currencyName, function(value)
+			value.leaderstats = newValue
+			return value
+		end)
+	end)
+	end
+end
+
+
+openGuiToolbarButton.Click:Connect(onOpenGuiButtonClicked)
+widgetFrame.CurrencyPart.Activated:Connect(createCurrencyPart)
+widgetFrame.CurrencyLabel.Activated:Connect(createCurrencyLabel)
+widgetFrame.ImportModule.Activated:Connect(importModule)
+
+autoSaveIntervalTextBox:SetValueChangedFunction(autoSaveIntervalChanged)
+
+syncGuiColors({widgetFrame, widgetFrame.CurrencyPart, widgetFrame.CurrencyLabel, widgetFrame.ImportModule})]]></ProtectedString>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="Frame" referent="RBX5C35B4BDC9794F919C910C17E1FC89EA">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">0</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">1</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Frame</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0</XS>
+						<XO>0</XO>
+						<YS>0</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="UIListLayout" referent="RBXB4BE97576F3247A38214756CBCA8B10A">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<token name="FillDirection">1</token>
+						<token name="HorizontalAlignment">1</token>
+						<string name="Name">UIListLayout</string>
+						<UDim name="Padding">
+							<S>0</S>
+							<O>0</O>
+						</UDim>
+						<token name="SortOrder">2</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<token name="VerticalAlignment">1</token>
+					</Properties>
+				</Item>
+				<Item class="TextButton" referent="RBXE49B2DACCBFB40A1BF902E47CF20C109">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">0</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<token name="Font">3</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<int name="LayoutOrder">40</int>
+						<float name="LineHeight">1</float>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">CurrencyPart</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>0</YO>
+						</UDim2>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>200</XO>
+							<YS>0</YS>
+							<YO>30</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Create Currency Part</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<bool name="TextScaled">false</bool>
+						<float name="TextSize">26</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+				</Item>
+				<Item class="TextButton" referent="RBX5E74EA5873574192AB77F0766242BBCC">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">0</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<token name="Font">3</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<int name="LayoutOrder">50</int>
+						<float name="LineHeight">1</float>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">CurrencyLabel</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>0</YO>
+						</UDim2>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>200</XO>
+							<YS>0</YS>
+							<YO>30</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Create Currency Label</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<bool name="TextScaled">false</bool>
+						<float name="TextSize">26</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+				</Item>
+				<Item class="TextButton" referent="RBX2F5B2B30CD0B4F80AB630DFDC4B403D7">
+					<Properties>
+						<bool name="Active">true</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoButtonColor">true</bool>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">0</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<token name="Font">3</token>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+							<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+						</Font>
+						<int name="LayoutOrder">38</int>
+						<float name="LineHeight">1</float>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<bool name="Modal">false</bool>
+						<string name="Name">ImportModule</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>0</YO>
+						</UDim2>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">true</bool>
+						<bool name="Selected">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0</XS>
+							<XO>200</XO>
+							<YS>0</YS>
+							<YO>30</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">Import Module</string>
+						<Color3 name="TextColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<bool name="TextScaled">false</bool>
+						<float name="TextSize">26</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">true</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="Script" referent="RBXF349A7AFFB6D4A18B617BD7A75DFB726">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="Disabled">false</bool>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">PluginActions</string>
+					<token name="RunContext">0</token>
+					<string name="ScriptGuid">{48FEDA78-CB7B-4972-8479-649B6BB3ADA9}</string>
+					<ProtectedString name="Source"><![CDATA[local Selection = game:GetService("Selection")
+local changeHistoryService : ChangeHistoryService = game:GetService("ChangeHistoryService")
+
+local currencyPartAction = plugin:CreatePluginAction("currencyPartCreation", "Create Currency Part", "Create a currency part", "")
+local currencyLabelAction = plugin:CreatePluginAction("currencyLabelCreation", "Create Currency Label", "Create a currency label", "")
+
+local function createCurrencyPart()
+	local newPart = Instance.new("Part")
+	newPart:SetAttribute("CurrencyName", "")
+	newPart:SetAttribute("Value", 0)
+	newPart:SetAttribute("CooldownTime", 0)
+
+	newPart.Name = "CurrencyPart"
+	newPart.Parent = Selection:Get()[1] or workspace
+
+	Selection:Set({newPart})
+	changeHistoryService:SetWaypoint("Create a new currencyPart")
+end
+
+local function createCurrencyLabel()
+	local newLabel = Instance.new("TextLabel")
+	newLabel.Size = UDim2.new(0, 165, 0, 65)
+	newLabel.Text = 0
+	newLabel:SetAttribute("CurrencyName", "")
+
+	newLabel.Name = "CurrencyLabel"
+	newLabel.Parent = Selection:Get()[1] or game:GetService("StarterGui")
+
+	Selection:Set({newLabel})
+	changeHistoryService:SetWaypoint("Create a new currencyLabel")
+end
+
+currencyPartAction.Triggered:Connect(createCurrencyPart)
+currencyLabelAction.Triggered:Connect(createCurrencyLabel)]]></ProtectedString>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="PackageLink" referent="RBX33B05BB6BF5D46CFB53188CA0C5061C8">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="AutoUpdate">false</bool>
+				<int name="ModifiedState">1</int>
+				<string name="Name">PackageLink</string>
+				<Content name="PackageIdSerialize"><url>rbxassetid://10076965376</url></Content>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<int64 name="VersionIdSerialize">124</int64>
+			</Properties>
+		</Item>
+		<Item class="Folder" referent="RBX7A10AC1A891B4FBFBD34AB913E62C174">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">CurrencyPlugin</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+			<Item class="Script" referent="RBX8A22984905364C25B11905EDA2F7698B">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="Disabled">true</bool>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">Datastores</string>
+					<token name="RunContext">0</token>
+					<string name="ScriptGuid">{885E7263-9E47-4643-A08D-55253D51D789}</string>
+					<ProtectedString name="Source"><![CDATA[local datastoreService = game:GetService("DataStoreService")
+local players = game:GetService("Players")
+local serverScriptService = game:GetService("ServerScriptService")
+local currencyModule = require(serverScriptService:FindFirstChild("CurrencyPlugin"):FindFirstChild("CurrencyService"))
+
+local datastore = datastoreService:GetDataStore("Currencies")
+local keyForArrayOfCurrencyNames = "currencyNames"
+local keyForCurrencyData = "CurrencyData"
+local currencyData
+local autoSaveInterval = plugin:GetSetting("AutoSaveInterval") or 30 --Amount of seconds between each auto-save
+
+local function retrieveData(userId:Int)
+	local arrayOfCurrencyNames
+	local nameSuccess, errMessage = pcall(function()
+		arrayOfCurrencyNames = datastore:GetAsync(keyForArrayOfCurrencyNames)
+	end)
+
+	if not nameSuccess then
+		warn("Could not retrieve table of currency names: ", errMessage)
+	end
+	if not arrayOfCurrencyNames then
+		arrayOfCurrencyNames = {}
+	end
+
+	local playerData
+	local success, errorMessage = pcall(function()
+		playerData = datastore:GetAsync("Player_" .. userId)
+	end)
+	if not success then 
+		warn("Player data could not be retrieved because " .. errorMessage .. "Retrying")
+		retrieveData(userId)
+	end
+
+	if playerData ~= nil then
+		for _, name in ipairs(arrayOfCurrencyNames)do
+			currencyModule:GiveCurrency(name, userId, playerData[name] or 0)
+		end
+	end
+end
+
+local function saveData(userId:Int)
+	local dataKey = "Player_" .. userId
+	local newData = {}
+
+	for name, currency in pairs(currencyModule.currencies)do
+		newData[name] = currency[userId]
+	end
+
+	local success, errorMessage = pcall(function() datastore:UpdateAsync(dataKey, function(oldData)
+			return newData
+		end)
+	end)
+
+	if not success then warn("Could not save player currency data because " .. errorMessage) end
+	
+	local currencyDataSuccess, currencyData = pcall(function()
+		currencyData = datastore:GetAsync(keyForCurrencyData)
+	end)
+
+	local nameSuccess, arrayOfCurrencyNames = pcall(function()return datastore:GetAsync(keyForArrayOfCurrencyNames)end)	
+
+	if arrayOfCurrencyNames ~= nil then
+		for name, currency in pairs(currencyModule.currencies)do
+			if table.find(arrayOfCurrencyNames, name) == nil then
+				local insertionSuccess, errorMessage = pcall(datastore:UpdateAsync(keyForArrayOfCurrencyNames, function(oldData)
+					return table.insert(oldData, name)
+				end))
+			end
+		end
+	else
+		local data = {}
+		for name, currency in pairs(currencyModule.currencies)do
+			if currencyData[name].datastore then
+				table.insert(data, name)
+			end
+			if not currencyData[name] then
+				datastore:UpdateAsync(keyForCurrencyData, function(value)
+					value[name] = {
+						datastore = false,
+						leaderstats = true,
+					}
+				end)
+			end
+		end
+		local newNameSuccess, errorMessage = pcall(datastore:UpdateAsync(keyForArrayOfCurrencyNames, function(oldData)
+			return data
+		end))
+	end
+end
+
+local function saveDataForAllPlayers()
+	for _, player : Player in ipairs(players:GetPlayers()) do
+		saveData(player.UserId)
+	end
+end
+
+--Load Data on Player Join
+players.PlayerAdded:Connect(function(plr)
+	plr.CharacterAdded:Wait()
+	retrieveData(plr.UserId)
+end)
+--Periodic Auto-Saves
+while true do
+	task.wait(autoSaveInterval)
+	saveDataForAllPlayers()
+end
+--Save when a player leaves
+players.PlayerRemoving:Connect(function(plr)
+	saveData(plr.UserId)
+	currencyModule.WipeDataForUser(plr)--So that it is not taking up space on the server
+end)
+--Save on Server Close
+game:BindToClose(saveDataForAllPlayers)]]></ProtectedString>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="Script" referent="RBXB62742FBB8334B0EA7B80E4C45BBCBAF">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="Disabled">true</bool>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">Iteration Method</string>
+					<token name="RunContext">0</token>
+					<string name="ScriptGuid">{1546337D-78A6-4248-9A6A-F08BD05AA65A}</string>
+					<ProtectedString name="Source"><![CDATA[--Services and Modules
+local players = game:GetService("Players")
+local serverScriptService = game:GetService("ServerScriptService")
+local currencyModule = require(serverScriptService:FindFirstChild("CurrencyPlugin"):FindFirstChild("CurrencyService"))
+
+
+--Functions
+local function giveCurrency(otherPart, currencyPart:BasePart)
+	if not currencyPart:GetAttribute("Cooldown") then
+		local character = otherPart.Parent
+		local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+		if humanoid then
+			currencyPart:SetAttribute("Cooldown", true)
+
+			local player = players:GetPlayerFromCharacter(character)
+			local userId = player.UserId
+			local currencyName = currencyPart:GetAttribute("CurrencyName")
+
+			local account = currencyModule.GiveCurrency(nil,currencyName, userId, currencyPart:GetAttribute("Value"))
+
+			local initialTransparency = currencyPart.Transparency
+			currencyPart.Transparency = .66
+			
+			wait(currencyPart:GetAttribute("CooldownTime"))
+			currencyPart:SetAttribute("Cooldown", false)
+			currencyPart.Transparency = 0
+		end
+	end
+end
+
+local function checkIfCurrencyPart(part:BasePart)
+	if part ~= nil then
+		if part:GetAttribute("CurrencyName") and part:GetAttribute("Value") then
+			part.Touched:Connect(function(otherPart)
+				giveCurrency(otherPart, part)
+			end)
+		end
+	end
+end
+
+
+
+--Currency part setup for all descendants of workspace that are curreny parts
+desc = workspace:GetDescendants()
+for _, inst in ipairs(desc) do
+		checkIfCurrencyPart(inst)
+end
+--And setup for any descendants that are added later that are currency parts
+workspace.DescendantAdded:Connect(checkIfCurrencyPart)
+]]></ProtectedString>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="Script" referent="RBXB21A5E80D61F42BB9CB79C5E19C18CF6">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="Disabled">true</bool>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">Leaderstats</string>
+					<token name="RunContext">0</token>
+					<string name="ScriptGuid">{411EC64D-2A1B-4C6C-8AE1-783FE0210B6C}</string>
+					<ProtectedString name="Source"><![CDATA[local players = game:GetService("Players")
+local serverScriptService = game:GetService("ServerScriptService")
+local currencyModule = require(serverScriptService:WaitForChild("CurrencyPlugin").CurrencyService)
+
+local function onPlayerJoin(plr)
+	local leaderstats = Instance.new("Folder")
+	leaderstats.Name = "leaderstats"
+	leaderstats.Parent = plr
+end
+
+local function onCurrencyGiven(playerId, currencyName, account)
+	local player = players:GetPlayerByUserId(playerId)
+	local leaderstats = player:WaitForChild("leaderstats")
+	local currencyValueObject:IntValue = leaderstats:FindFirstChild(currencyName)
+	
+	if not currencyValueObject then
+		currencyValueObject = Instance.new("IntValue")
+		currencyValueObject.Name = currencyName
+		currencyValueObject.Parent = leaderstats
+	end
+	
+	currencyValueObject.Value = account
+end
+
+--if this runs after a player joins, it should still work because onPlayerJoin will just be called for all existing players
+for _, player in ipairs(players:GetPlayers()) do
+	onPlayerJoin(player)
+end
+
+players.PlayerAdded:Connect(onPlayerJoin)
+currencyModule.CurrencyGiven:Connect(onCurrencyGiven, "leaderstats")]]></ProtectedString>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBX9C8B9CB0A67C4A71AE9791FDBC044256">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">CurrencyService</string>
+					<string name="ScriptGuid">{653B665F-F09D-4104-9FFB-4CA6F6D7F3F3}</string>
+					<ProtectedString name="Source"><![CDATA[local Signal = require(10396031654)
+
+local currencyModule = {
+	guiTable = {},--This is for saving the currency displays for every player
+	currencies = {},--To store all the currencies
+	CurrencyGiven = Signal.new("CurrencyGiven"),
+	WipingData = Signal.new("WipingData"),
+}
+
+local players = game:GetService("Players")
+
+local function displayCurrencyAmount(userId:number, currencyName:string, value:number)
+	
+	local playerGuis = currencyModule.guiTable[userId]--A table with all the currency displays for the player with this UserId
+	if not playerGuis then
+		currencyModule.guiTable[userId] = {}
+		playerGuis = currencyModule.guiTable[userId]
+	end
+	
+	local currencyDisplay:TextLabel
+	
+		currencyDisplay = playerGuis[currencyName]--The currency display was saved to the table by the currency name and will now be retrieved
+		if not currencyDisplay then--If it hasn't already been saved to the table
+			local guis = players:GetPlayerByUserId(userId).PlayerGui:GetDescendants()
+			for _, gui in pairs(guis) do
+				if gui:GetAttribute("CurrencyName") == currencyName then --Find the one with attribute that has the right currency name
+					currencyDisplay = gui--Set it to the display for the text to be changed
+					break--Once the currency display is found we don't need to continue running the loop
+				end
+			end
+		playerGuis[currencyName] = currencyDisplay--Save it to the table to save resources and not have to find it again
+	end
+	if currencyDisplay then--Using an if statement to prevent it from crashing if there is no display
+		currencyDisplay.Text = value
+	end
+end
+
+function currencyModule:GiveCurrency(currencyName : string, userId : number, amount : number)
+	
+	--Check for a table to store how much each player has of this currency	
+	local thisCurrencyTable : {number} = currencyModule.currencies[currencyName]
+		
+	if thisCurrencyTable == nil then --If the table doesn't already exist
+		currencyModule.currencies[currencyName] = {}--create it
+		thisCurrencyTable = currencyModule.currencies[currencyName]--Store it to the variable for access
+	end
+	
+	local account = thisCurrencyTable[userId]--the value in the table that matches the player's userId is what is used to store how much of a currency the player has
+	
+	if account ~= nil then--If they have an account
+		--The amount is added
+		thisCurrencyTable[userId] = thisCurrencyTable[userId] + amount
+	elseif account == nil then --If they don't have an account
+		--An account is created for them, defaulting to the value of the amount (skipping a step from 
+		--setting the value to 0 and then adding the amount)
+		thisCurrencyTable[userId] = amount
+	end
+
+	account = thisCurrencyTable[userId]
+	
+	currencyModule.CurrencyGiven:Fire(userId, currencyName, account, amount)
+	
+	return account
+end
+
+function currencyModule:GetAccount(currencyName : string, userId : number) :number?
+	local thisCurrencyTable = currencyModule.currencies[currencyName]
+	
+	if thisCurrencyTable == nil then
+		warn("Attempt to get an accouont for a currency that does not exist")--If the currency does not exist a nil value is returned and a warning is sent that the currency does not exist
+	else
+		local account = thisCurrencyTable[userId]
+		if account == nil then --If the player doesn't have an account yet the default of 0 is sent
+			return 0
+		else
+			return account
+		end
+	end
+	return nil
+end
+
+function currencyModule:WipeDataForUser(userId : number)
+	currencyModule.WipingData:Fire(userId)
+	for name, currency in pairs(currencyModule.currencies) do
+		currency[userId] = nil
+	end
+	currencyModule.guiTable[userId] = nil
+end
+
+function currencyModule:WipeDataForUserInCurrencies(userId:number, currencyNames:{string})
+	local currencyTable = currencyModule.currencies
+	for _, currencyName in ipairs(currencyNames) do
+		currencyTable[currencyName][userId] = nil
+	end
+end
+
+currencyModule.CurrencyGiven:Connect(displayCurrencyAmount, "DisplayTheCurrentCurrencyAmount")
+
+return currencyModule]]></ProtectedString>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+		</Item>
+	</Item>
+</roblox>
